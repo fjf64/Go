@@ -1,0 +1,50 @@
+/* Basic CSS Reset & Variables */
+:root {
+    /* --bg-color: #f4f4f9;
+    --text-color: #333333;
+    --primary-color: #007acc;
+    --primary-hover: #005999; */
+}
+
+* {
+    /* box-sizing: border-box; */
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: black;
+    color: white;
+    display:flex;
+    /* justify-content: center; */
+    flex-direction: column;
+    align-items: center; 
+    height: 100vh; 
+}
+#board {
+    background-color: grey;
+    min-width:0;
+    /* width: 10vh; */
+    padding: 0;
+}
+input[type="checkbox"] {
+    width: 4vh;
+    height: 4vh;
+}
+button {
+    min-width: 2vh;
+    height: 4vh;
+    margin-bottom: 1vh;
+    margin-top: 0vh;
+    padding: 1vh;
+    
+}
+tbody {
+
+}
+tr {
+
+}
+td {
+
+}

@@ -1,4 +1,9 @@
 var symbols = ['0', 'X', '&nbsp;'] // none, p1, p2
+var inverseSymbols = {
+  '0':0,
+  'X':1,
+  '&nbsp;':2
+} // none, p1, p2
 var boardStats = {
     size:5
 }
@@ -24,7 +29,7 @@ function createBoard(boardsize = 5, location = "board") {
     idCounterY++
   }
   // console.log(document.getElementById(location))
-  // document.getElementById(location).firstChild.remove()
+  document.getElementById(location).firstChild.remove()
   document.getElementById(location).appendChild(tbl)
 
   //backend
@@ -61,19 +66,31 @@ function playerMove(cellID) {
   cellID = cellID.split("-")  
   console.log(currentPlayer) 
   playMove(board, parseInt(cellID[1]),parseInt(cellID[2]), symbols[currentPlayer])
-  }
   nextMove()
+    }
+  }
+function passTurn() {
+  //WIP, use button for player
 }
+
 function nextMove() {
   currentPlayer == 1 ? currentPlayer = 0 : currentPlayer = 1
-  console.log(currentPlayer)
+  // game logic here
+
+  //ai moves
   if (currentPlayer == 0 && !document.getElementById("p1").checked){
-
+    //runai(0)
   } else if (currentPlayer == 1 && !document.getElementById("p1").checked) {
-
+    //runai(1)
   }
 }
+function checkLiberties(board, x, y) {
+  //wip
+}
 
+function checkChainLiberties(board, x, y) {
+  //wip
+}
 
 function checkAdjacent(board, x, y) { //WIP
   adjecentAdjustment = [

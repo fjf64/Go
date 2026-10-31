@@ -39,12 +39,11 @@ button {
     padding: 1vh;
     
 }
-tbody {
-
+table {
+    border-spacing: 0;
 }
-tr {
-
-}
-td {
-
+tbody, tr, td {
+    border: 1px solid black;
+    padding: 1vh;
+    cursor:default
 }

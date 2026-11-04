@@ -26,13 +26,23 @@ body {
 input[type="checkbox"] {
     width: 4vh;
     height: 4vh;
+    border-radius: 0;
+    top: 1vh;
+}
+input[type="number"] {
+    width: 6vh;
+    height: 4vh;
+    border-radius: 0;
+    top: 1vh;
 }
 button {
     min-width: 2vh;
     height: 4vh;
-    margin-bottom: 1vh;
+    margin-bottom: 0vh;
     margin-top: 0vh;
     padding: 1vh;
+    padding-bottom: 4vh;
+    border-radius: 0;
     
 }
 table {
@@ -42,4 +52,23 @@ tbody, tr, td {
     border: 1px solid black;
     padding: 1vh;
     cursor:default
+}
+
+.outer-container {
+    flex-flow: column;
+}
+.inner-container {
+    display: flex;
+    margin-top:1vh;
+    gap: 1vh;
+    flex-wrap:wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+#textBoxes {
+    display: flex;
+    flex-direction: row;
+    padding: 1vh;
+    justify-content:center;
 }

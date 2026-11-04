@@ -11,10 +11,23 @@
 <body>
 
     <!-- STUFF HERE -->
-     <container>
-    <input id="p1" type="checkbox">
-    <input id="p2" type="checkbox">
-    <button id="reset-button" onclick="startGame()">Reset</button>
+    <container class="outer-container">
+        <container class="inner-container">
+            <input id="p1" type="checkbox">
+            <input id="p2" type="checkbox">
+            <p>Board Size:</p>
+            <input id="boardsize" min="1" max="99" type="number" placeholder="5" value=5>
+            <button id="reset-button" onclick="startGame()">Reset</button>
+            <button id="pass-button" onclick="passTurn()">Pass Turn</button>
+            <button id="concede-button" onclick="endGame()">Concede</button>
+            <div style="min-width: 100%;"></div>
+        </container>
+        <container class="inner-container">
+            <div id="textBoxes">
+                <p id="playerIcon" style="padding:1vh;"></p>
+                <p id="winner" style="padding:1vh;"></p>
+            </div>
+        </container>
     </container>
     <container>
         <div id="board">

@@ -10,6 +10,7 @@ var boardStats = {
 var board = []
 var currentPlayer = 1
 var lastPlay = []
+editedPlayerIcon = false
 
 function includesDeep(array, value) {
   return array.some((subArray) => {
@@ -17,6 +18,27 @@ function includesDeep(array, value) {
       (subArrayElem, index) => subArrayElem === value[index]
     );
   });
+}
+function sleep(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function flashElement(element, effect, ogColor, newColor, time = 500, count = 1) {
+  //effect in path list
+  poppedEffect = JSON.parse(JSON.stringify(effect));
+  var target = element;
+  poppedEffect.pop();
+  for (let x of poppedEffect) {
+    target = target[x];
+  }
+  i = 0;
+  while (i < count) {
+    target[effect[effect.length - 1]] = newColor;
+    await sleep(time);
+    target[effect[effect.length - 1]] = ogColor;
+    await sleep(time);
+    i++;
+  }
 }
 
 function createBoard(boardsize = boardStats.size, location = "board") {
@@ -62,7 +84,7 @@ function checkValidity(board, x, y, player) {
         continue
       }
       var chainLiberties = getChainLiberties(fakeBoard, i[0], i[1], i[2])
-      if (chainLiberties.length < 1) {
+      if (chainLiberties.length < 1 && i[2] !== player) {
         willCapture = true
       }
     }
@@ -97,21 +119,36 @@ function playerMove(cellID) {
 }
 
 function passTurn() {
-  //WIP, use button for player
+  nextTurn()
 }
 
 function nextTurn() {
   currentPlayer == 1 ? currentPlayer = 0 : currentPlayer = 1
+  if (editedPlayerIcon == false) {
+  document.getElementById("playerIcon").innerHTML = "Player: "+symbols[currentPlayer]
+  } else {
+    editedPlayerIcon = false
+  }
+  // GAME LOGIC
+  lastPlayAdjacent = getAdjacent(board, lastPlay[0], lastPlay[1])
 
-  // game logic here
-  for (let i of getAdjacent(board, lastPlay[0], lastPlay[1])) {
+  // Sort to prevent self-capture before capture
+  sortedAjdacent = []
+  for (let i of lastPlayAdjacent) {
+    if (i[2] == lastPlay[2]) {
+    sortedAjdacent.push(i)
+  } else if (i[2] == (lastPlay[2] == symbols[1] ? symbols[0]: symbols[1])) {
+    sortedAjdacent.unshift(i)
+    }
+  }
+  for (let i of sortedAjdacent) {
     if (i[2] == symbols[2]) {
       continue
     }
     var chainLiberties = getChainLiberties(board, i[0], i[1], i[2])
     var chain = getChain(board, i[0], i[1], i[2])
-    console.log(chain)
     if (chainLiberties.length < 1) { // No libs
+      //append
       playMove(board, i[0], i[1], symbols[2], false)
       for (let ii of chain) {
         playMove(board, ii[0], ii[1], symbols[2], false)
@@ -135,6 +172,17 @@ function getOpenSpaces(board, x, y) {
   }
   return libs
 }
+
+function getAllOpenSpaces(board) {
+  spaces = []
+  for (let i of board) {
+    if (i[2] == symbols[2]) {
+      spaces.push(i)
+    }
+  }
+  return spaces
+}
+
 function getLiberties(board, x, y, player) {
   libs = []
   for (let i of getAdjacent(board, x, y)) {
@@ -175,7 +223,7 @@ function getChainLiberties(board, x, y, player) {
   return liberties
 }
 
-function getAdjacent(board, x, y) { //WIP
+function getAdjacent(board, x, y) {
   adjecentAdjustment = [
     [0, -1],
     [0, 1],
@@ -191,12 +239,29 @@ function getAdjacent(board, x, y) { //WIP
 }
 
 function startGame() {
-  board = createBoard(boardStats.size)
+  board = createBoard(document.getElementById("boardsize").value)
   currentPlayer = 1
   lastPlay = []
   nextTurn()
-
 }
 
+async function endGame() {
+  var time = 3000
+  var winner = 0
+  currentPlayer == 1 ?   winner = 0 : winner =  1
+  document.getElementById("winner").innerHTML = "Winner: " + symbols[winner]
+  document.getElementById("playerIcon").innerHTML = ""
+  console.log(document.getElementById("playerIcon").innerHTML)
+  editedPlayerIcon = true
+  startGame()
+  await sleep(time);
+  document.getElementById("winner").innerHTML = ""
+  editedPlayerIcon = false
+  document.getElementById("playerIcon").innerHTML = "Player: "+symbols[currentPlayer]
+}
+
+
+document.getElementById("p1").checked = true
+document.getElementById("p2").checked = true
 
 startGame()

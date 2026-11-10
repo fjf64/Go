@@ -1,3 +1,4 @@
+// todo: rule 7 double back, two passes end game, 
 var symbols = ['0', 'X', '&nbsp;'] // none, p1, p2
 var inverseSymbols = {
   '0': 0,
@@ -20,7 +21,7 @@ function includesDeep(array, value) {
   });
 }
 function sleep(ms) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function flashElement(element, effect, ogColor, newColor, time = 500, count = 1) {
@@ -74,6 +75,17 @@ function createBoard(boardsize = boardStats.size, location = "board") {
   return board
 
 }
+
+function getStraightBoard(board) {
+  var newBoard = []
+  for (let i in board) {
+    for (let ii in board[i]) { //every tile
+      newBoard.push([parseInt(i), parseInt(ii), board[i][ii]])
+    }
+  }
+  return newBoard
+}
+
 function checkValidity(board, x, y, player) {
   if (board[x][y] == symbols[2]) {
     var willCapture = false
@@ -118,6 +130,16 @@ function playerMove(cellID) {
   }
 }
 
+function getCapturedLand(board, player) { //wip
+  capturedLand = []
+  for (let i in board) {
+    for (let ii in board[i]) { //every tile
+
+    }
+  }
+  return capturedLand
+}
+
 function passTurn() {
   nextTurn()
 }
@@ -125,7 +147,7 @@ function passTurn() {
 function nextTurn() {
   currentPlayer == 1 ? currentPlayer = 0 : currentPlayer = 1
   if (editedPlayerIcon == false) {
-  document.getElementById("playerIcon").innerHTML = "Player: "+symbols[currentPlayer]
+    document.getElementById("playerIcon").innerHTML = "Player: " + symbols[currentPlayer]
   } else {
     editedPlayerIcon = false
   }
@@ -136,9 +158,9 @@ function nextTurn() {
   sortedAjdacent = []
   for (let i of lastPlayAdjacent) {
     if (i[2] == lastPlay[2]) {
-    sortedAjdacent.push(i)
-  } else if (i[2] == (lastPlay[2] == symbols[1] ? symbols[0]: symbols[1])) {
-    sortedAjdacent.unshift(i)
+      sortedAjdacent.push(i)
+    } else if (i[2] == (lastPlay[2] == symbols[1] ? symbols[0] : symbols[1])) {
+      sortedAjdacent.unshift(i)
     }
   }
   for (let i of sortedAjdacent) {
@@ -163,10 +185,10 @@ function nextTurn() {
     //runai(1)
   }
 }
-function getOpenSpaces(board, x, y) {
+function getSpaces(board, x, y, sym = symbols[2]) {
   libs = []
   for (let i of getAdjacent(board, x, y)) {
-    if (i[2] == symbols[2]) {
+    if (i[2] == sym) {
       libs.push(i)
     }
   }
@@ -211,11 +233,35 @@ function getChain(board, x, y, player) {
   return chain
 }
 
+function getAllChains(board, icon) { //split into three lists with all icons? wip
+  // WIP
+  var chains = []
+  var cuttingBoard = getStraightBoard(board)
+  // var straightBoard = JSON.parse(JSON.stringify(cuttingBoard))
+  for (let i in cuttingBoard) {
+    if (cuttingBoard[i][2] != icon || cuttingBoard[i] == "s") {
+      cuttingBoard[i] = "s"
+      continue
+    }
+    var chain = getChain(board, cuttingBoard[i][0], cuttingBoard[i][1], icon)
+    for (let i of chain) {
+      for (let ii in cuttingBoard) {
+        if (cuttingBoard[ii][0] == i[0] && cuttingBoard[ii][1] == i[1]) {
+          cuttingBoard[ii] = 's'
+        }
+      }
+      cuttingBoard[cuttingBoard.indexOf(i)] = 's'
+    }
+    chains.push(chain)
+  }
+  return chains
+}
+
 function getChainLiberties(board, x, y, player) {
   var chain = getChain(board, x, y, player)
   var liberties = []
   for (let links of chain) {
-    for (let lib of getOpenSpaces(board, links[0], links[1], player))
+    for (let lib of getSpaces(board, links[0], links[1], symbols[2]))
       if (lib[2] == symbols[2]) {
         liberties.push(lib)
       }
@@ -248,16 +294,15 @@ function startGame() {
 async function endGame() {
   var time = 3000
   var winner = 0
-  currentPlayer == 1 ?   winner = 0 : winner =  1
+  currentPlayer == 1 ? winner = 0 : winner = 1
   document.getElementById("winner").innerHTML = "Winner: " + symbols[winner]
   document.getElementById("playerIcon").innerHTML = ""
-  console.log(document.getElementById("playerIcon").innerHTML)
   editedPlayerIcon = true
   startGame()
   await sleep(time);
   document.getElementById("winner").innerHTML = ""
   editedPlayerIcon = false
-  document.getElementById("playerIcon").innerHTML = "Player: "+symbols[currentPlayer]
+  document.getElementById("playerIcon").innerHTML = "Player: " + symbols[currentPlayer]
 }
 
 

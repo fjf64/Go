@@ -9,6 +9,7 @@ var boardStats = {
   size: 5
 }
 var board = []
+var straightBoard = []
 var currentPlayer = 1
 var lastPlay = []
 editedPlayerIcon = false
@@ -113,6 +114,7 @@ function checkValidity(board, x, y, player) {
 
 function playMove(board, x, y, player, playerMade = true) {
   board[x][y] = player
+  straightBoard = getStraightBoard(board)
   document.getElementById('table').children[0].children[y].children[x].innerHTML = player
   if (playerMade) {
     lastPlay = [x, y, player]
@@ -195,9 +197,9 @@ function getSpaces(board, x, y, sym = symbols[2]) {
   return libs
 }
 
-function getAllOpenSpaces(board) {
+function getAllOpenSpaces(straightBoard) {
   spaces = []
-  for (let i of board) {
+  for (let i of straightBoard) {
     if (i[2] == symbols[2]) {
       spaces.push(i)
     }
@@ -256,6 +258,14 @@ function getAllChains(board, icon) { //split into three lists with all icons? wi
   }
   return chains
 }
+function getValidMoves(straightBoard, player) {
+  validMoves = []
+  for (let i of getAllOpenSpaces(straightBoard))
+    if (checkValidity(board, i[0], i[1], player)) {
+      validMoves.push(i)
+    }
+    return(validMoves)
+}
 
 function getChainLiberties(board, x, y, player) {
   var chain = getChain(board, x, y, player)
@@ -286,6 +296,7 @@ function getAdjacent(board, x, y) {
 
 function startGame() {
   board = createBoard(document.getElementById("boardsize").value)
+  straightBoard = getStraightBoard(board)
   currentPlayer = 1
   lastPlay = []
   nextTurn()

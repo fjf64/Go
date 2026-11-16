@@ -1,4 +1,4 @@
-// todo: rule 7 double back, two passes end game, 
+// todo: rule 7 double back, two passes end game, get area
 var symbols = ['0', 'X', '&nbsp;'] // none, p1, p2
 var inverseSymbols = {
   '0': 0,
@@ -9,7 +9,6 @@ var boardStats = {
   size: 5
 }
 var board = []
-var straightBoard = []
 var currentPlayer = 1
 var lastPlay = []
 editedPlayerIcon = false
@@ -114,7 +113,6 @@ function checkValidity(board, x, y, player) {
 
 function playMove(board, x, y, player, playerMade = true) {
   board[x][y] = player
-  straightBoard = getStraightBoard(board)
   document.getElementById('table').children[0].children[y].children[x].innerHTML = player
   if (playerMade) {
     lastPlay = [x, y, player]
@@ -132,12 +130,41 @@ function playerMove(cellID) {
   }
 }
 
-function getCapturedLand(board, player) { //wip
-  capturedLand = []
-  for (let i in board) {
-    for (let ii in board[i]) { //every tile
-
+function getCapturedLandArrays(board) { //wip
+  var capturedLand = [[], [], []]; // 0, 1, consested
+  for (let i of getAllChains(board, symbols[0])) {
+    for (let ii of i) {
+      capturedLand[0].push(ii)
     }
+  }
+  for (let i of getAllChains(board, symbols[1])) {
+    for (let ii of i) {
+      capturedLand[1].push(ii)
+    }
+  }
+  var emptyChains = getAllChains(board, symbols[2]);
+  for (let chain of emptyChains) {
+    owner = symbols[2];
+    for (let i of chain) {
+      for (adjacent of getAdjacent(board, i[0], i[1])) {
+        if (adjacent[2] != symbols[2] && owner == symbols[2]) {
+          owner = adjacent[2];
+        } else if (adjacent[2] != symbols[2] && adjacent[2] != owner) { // after first and not empty, 
+          owner = "contested";
+          break
+        }
+      }
+      if (owner == "contested") {
+        break;
+      }
+    }
+    if (owner == "contested") {
+        continue;
+      } else if (owner != symbols[2]) {
+        for (i of chain) {
+          capturedLand[inverseSymbols[owner]].push(i)
+        }
+      }
   }
   return capturedLand
 }
@@ -197,8 +224,9 @@ function getSpaces(board, x, y, sym = symbols[2]) {
   return libs
 }
 
-function getAllOpenSpaces(straightBoard) {
+function getAllOpenSpaces(board) {
   spaces = []
+  straightBoard = getStraightBoard(board)
   for (let i of straightBoard) {
     if (i[2] == symbols[2]) {
       spaces.push(i)
@@ -258,13 +286,13 @@ function getAllChains(board, icon) { //split into three lists with all icons? wi
   }
   return chains
 }
-function getValidMoves(straightBoard, player) {
+function getValidMoves(board, player) {
   validMoves = []
-  for (let i of getAllOpenSpaces(straightBoard))
+  for (let i of getAllOpenSpaces(board))
     if (checkValidity(board, i[0], i[1], player)) {
       validMoves.push(i)
     }
-    return(validMoves)
+  return (validMoves)
 }
 
 function getChainLiberties(board, x, y, player) {
@@ -296,7 +324,6 @@ function getAdjacent(board, x, y) {
 
 function startGame() {
   board = createBoard(document.getElementById("boardsize").value)
-  straightBoard = getStraightBoard(board)
   currentPlayer = 1
   lastPlay = []
   nextTurn()
